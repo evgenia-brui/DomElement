@@ -1,12 +1,13 @@
 "use strict";
 
-const DomElement = function(selector, height, width, bg, fontSize, text) {
+const DomElement = function(selector, height, width, bg, fontSize, text, position) {
     this.selector = selector;
     this.height   = height;
     this.width    = width;
     this.bg       = bg;
     this.fontSize = fontSize;
     this.text     = text;
+    this.position = position;
 };
 
 DomElement.prototype.createNewElement = function() {
@@ -26,6 +27,7 @@ DomElement.prototype.createNewElement = function() {
         'width'      : this.width,
         'background' : this.bg,
         'font-size'  : this.fontSize,
+        'position'   : this.position,
     };
     const style = [];
 
@@ -40,11 +42,30 @@ DomElement.prototype.createNewElement = function() {
     document.body.append(element);
 };
 
-const domElement = new DomElement('.class', '50px', '100px', '#ccc', '18px', 'lorem ispum');
-domElement.createNewElement();
+DomElement.prototype.moveBlock = function(event) {
+    const block = document.querySelector(this.selector);
+    const coords = block.getBoundingClientRect();
+    switch (event.keyCode) {
+        case 37: // left arrow
+            block.style.left = coords.left - 10 + 'px';
+            break;
+        case 38: // up arrow
+            block.style.top = coords.top - 10 + 'px';
+            break;
+        case 39: // right arrow
+            block.style.left = coords.left + 10 + 'px';
+            break;
+        case 40: // down arrow
+            block.style.top = coords.top + 10 + 'px';
+            break;
+    }
+};
 
-const domElement2 = new DomElement('#id', '50px', '100px', '#ccc', '18px', 'lorem ispum');
-domElement2.createNewElement();
+DomElement.prototype.eventsListeners = function() {
+    const _this = this;
+    document.addEventListener('DOMContentLoaded', _this.createNewElement.bind(_this));
+    document.addEventListener('keydown', _this.moveBlock.bind(_this));
+};
 
-const domElement3 = new DomElement(null, null, '100px', '#ccc', null, 'lorem ispum');
-domElement3.createNewElement();
+const domElement = new DomElement('.square', '100px', '100px', 'green', null, null, 'absolute');
+domElement.eventsListeners();
